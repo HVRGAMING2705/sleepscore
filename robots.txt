@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sleepscore.vercel.app/sitemap.xml

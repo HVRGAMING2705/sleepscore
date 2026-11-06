@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SleepScore — Sleep Quality Predictor | AI/ML Project</title>
+<meta name="description" content="SleepScore predicts your nightly sleep quality score (0-100) from sleep hours, screen time before bed, caffeine intake, exercise and stress level, using a Ridge regression model trained on 600 synthetic sleep records.">
+<link rel="canonical" href="https://sleepscore.vercel.app/">
+<meta property="og:title" content="SleepScore — Sleep Quality Predictor">
+<meta property="og:description" content="Enter your day's habits and instantly get a predicted sleep quality score, with a real trained ML model running in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sleepscore.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SleepScore — Sleep Quality Predictor">
+<meta name="twitter:description" content="Ridge regression sleep-quality predictor. Try the live demo in your browser.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SleepScore","applicationCategory":"EducationalApplication","description":"Sleep quality predictor using Ridge regression.","url":"https://sleepscore.vercel.app/"}</script>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;max-width:720px;margin:0 auto;padding:24px;line-height:1.5}
+h1{font-size:2em} label{display:block;margin:12px 0 4px;font-weight:bold}
+input{width:100%;padding:10px;font-size:16px;border:1px solid #000;border-radius:4px;box-sizing:border-box}
+button{margin-top:20px;margin-right:8px;padding:12px 24px;font-size:17px;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer}
+#result{margin-top:24px;padding:20px;border:2px solid #000;border-radius:8px;display:none}
+#result b{font-size:2em}
+.note{color:#333;font-size:.95em} code{background:#f2f2f2;padding:2px 5px}
+</style>
+</head>
+<body>
+<h1>&#128564; SleepScore — Sleep Quality Predictor</h1>
+<p class="note">A 2nd-year B.Tech AI/ML project by Vikranth Reddy. A Ridge regression model trained on 600 synthetic sleep records predicts your sleep quality score (0&ndash;100) from sleep hours, screen time before bed, caffeine intake, exercise and stress level. 5-fold CV: <b>R&sup2; = 0.846</b>, MAE = 4.67 points vs a mean-guessing baseline of 12.06 points.</p>
+<label>Sleep hours last night</label><input id="sleep" type="number" value="7" min="4.5" max="9.5" step="0.5">
+<label>Screen time before bed (minutes)</label><input id="screen" type="number" value="60" min="0" max="180">
+<label>Caffeine today (mg)</label><input id="caff" type="number" value="150" min="0" max="400">
+<label>Exercise today (minutes)</label><input id="ex" type="number" value="30" min="0" max="90">
+<label>Stress level (1 = calm, 10 = very stressed)</label><input id="stress" type="number" value="5" min="1" max="10">
+<button onclick="predict()">Predict My Sleep Score</button>
+<button onclick="tryGood()">Try a great night</button>
+<div id="result"></div>
+<p class="note">How it works: the inputs are standardised with the training means and standard deviations, multiplied by the model&apos;s learned coefficients, and clipped to 0&ndash;100. The exact same weights run in this page and in the Python training script (<code>train.py</code>), so the browser result matches the trained model.</p>
+<p class="note">Try a sample: an average day — 7 hours sleep, 60 min screen, 150 mg caffeine, 30 min exercise, stress 5 &rarr; about 48.06. A great night — 8.5 hours sleep, 10 min screen, no caffeine, 60 min exercise, stress 2 &rarr; about 89.85. A rough night — 5 hours sleep, 150 min screen, 350 mg caffeine, no exercise, stress 9 &rarr; about 0.00.</p>
+<p class="note">This is a classroom demo on synthetic data — a fun guide to better sleep habits, not medical advice.</p>
+<p><a href="https://github.com/HVRGAMING2705/sleepscore">View source on GitHub</a></p>
+<script>
+const MEANS = [6.969963185961049, 70.51964707584601, 155.75087576421043, 29.87938796844599, 5.095288426073743];
+const STDS = [1.0540318889251836, 41.6599788821282, 103.96063492115866, 18.491274727563386, 2.0023461365461563];
+const COEF = [5.997358773481211, -5.085693297570246, -5.239774752825638, 4.6617020197900905, -8.026052232856086];
+const INTERCEPT = 45.907535762058714;
+function calc(){
+  const v = [parseFloat(document.getElementById("sleep").value), parseFloat(document.getElementById("screen").value), parseFloat(document.getElementById("caff").value), parseFloat(document.getElementById("ex").value), parseFloat(document.getElementById("stress").value)];
+  let s = INTERCEPT;
+  for (let j = 0; j < 5; j++) s += ((v[j]-MEANS[j])/STDS[j]) * COEF[j];
+  return Math.min(100, Math.max(0, s));
+}
+function show(p){
+  const verdict = p >= 70 ? "&#9989; GREAT SLEEP — well-rested night ahead. Keep these habits!" : (p >= 40 ? "&#128564; OKAY SLEEP — decent, but cutting late screen time or caffeine could lift it." : "&#9888; POOR SLEEP — try less screen time and caffeine, more exercise, and an earlier bedtime.");
+  const el = document.getElementById("result");
+  el.style.display = "block";
+  el.innerHTML = "<b>" + p.toFixed(2) + " / 100 sleep score</b><br>" + verdict;
+}
+function predict(){ show(calc()); }
+function tryGood(){
+  document.getElementById("sleep").value = 8.5; document.getElementById("screen").value = 10; document.getElementById("caff").value = 0; document.getElementById("ex").value = 60; document.getElementById("stress").value = 2; show(calc());
+}
+</script>
+</body>
+</html>
