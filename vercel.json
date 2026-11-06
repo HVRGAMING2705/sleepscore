@@ -28,7 +28,7 @@
     },
     {
      "key": "Access-Control-Allow-Origin",
-     "value": "https://sleepscore.vercel.app"
+     "value": "https://sleepscore-seven.vercel.app"
     },
     {
      "key": "Content-Security-Policy",

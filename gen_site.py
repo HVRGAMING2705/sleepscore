@@ -3,7 +3,7 @@ m = json.load(open("model.json"))
 means, stds, coef, icpt = m["means"], m["stds"], m["coef"], m["intercept"]
 mt = m["metrics"]
 r2, mae, rmse, base, mean_score = mt["cv_r2"], mt["cv_mae"], mt["cv_rmse"], mt["baseline_mae"], mt["mean_score"]
-DOMAIN = "sleepscore.vercel.app"
+DOMAIN = "sleepscore-seven.vercel.app"
 index = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
